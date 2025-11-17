@@ -1,10 +1,10 @@
 # Project: NAME
 
 ## Contributors
-NAME, NAME, NAME
+Tayo, Ade
 
 ## Dependencies
-- LANGUAGE AND VERSION
+- React?
 - EXTERNAL LIBRARIES
 - ETC
 
