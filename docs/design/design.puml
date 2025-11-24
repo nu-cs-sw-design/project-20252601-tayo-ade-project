@@ -1,2 +1,51 @@
 @startuml
+
+package "React Components" {
+
+  class App {
+    + renders MainScreen
+  }
+
+  class MainScreen {
+    + renders HabitList
+    + renders AddHabit
+    + renders LogHabit
+    + renders ReportPage
+  }
+
+  class HabitList {
+    + shows list of habits
+    + onClick -> HabitItem
+  }
+
+  class HabitItem {
+    + displays single habit
+  }
+
+  class AddHabit {
+    + form to create habit
+  }
+
+  class LogHabit {
+    + form to log habit completion
+  }
+
+  class ReportPage {
+    + displays generated report
+  }
+
+  class ReminderSettings {
+    + configure notifications
+  }
+}
+
+App --> MainScreen
+MainScreen --> HabitList
+MainScreen --> AddHabit
+MainScreen --> LogHabit
+MainScreen --> ReportPage
+MainScreen --> ReminderSettings
+
+HabitList --> HabitItem
+
 @enduml
