@@ -1,6 +1,24 @@
 @startuml
 
-package "React Components" {
+package "Model Layer" {
+  class Habit {
+    + id: string
+    + name: string
+    + frequency: string
+  }
+
+  class HabitLog {
+    + habitId: string
+    + date: Date
+  }
+
+  class ReminderSettingsModel {
+    + time: string
+    + enabled: boolean
+  }
+}
+
+package "View Layer (React Components)" {
 
   class App {
     + renders MainScreen
@@ -11,11 +29,11 @@ package "React Components" {
     + renders AddHabit
     + renders LogHabit
     + renders ReportPage
+    + renders ReminderSettings
   }
 
   class HabitList {
-    + shows list of habits
-    + onClick -> HabitItem
+    + displays list of habits
   }
 
   class HabitItem {
@@ -39,6 +57,42 @@ package "React Components" {
   }
 }
 
+package "Controller Layer" {
+
+  class HabitController {
+    + getHabits()
+    + addHabit()
+    + deleteHabit()
+    + logCompletion()
+  }
+
+  class ReportController {
+    + generateWeeklyReport()
+    + generateMonthlyReport()
+  }
+
+  class ReminderController {
+    + updateReminderSettings()
+    + getReminderSettings()
+  }
+}
+
+' Relationships between layers
+HabitController --> Habit : uses
+HabitController --> HabitLog : uses
+ReportController --> HabitLog : analyzes
+ReminderController --> ReminderSettingsModel : manages
+
+' Controllers providing data to Views
+HabitController --> HabitList
+HabitController --> HabitItem
+HabitController --> AddHabit
+HabitController --> LogHabit
+
+ReportController --> ReportPage
+ReminderController --> ReminderSettings
+
+' App navigation
 App --> MainScreen
 MainScreen --> HabitList
 MainScreen --> AddHabit
