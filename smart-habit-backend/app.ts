@@ -1,22 +1,31 @@
-import "dotenv/config";
-import express from "express";
-import sqlite3 from "sqlite3";
-import { v4 as uuidv4 } from "uuid";
-import { genSaltSync } from "bcrypt-ts";
-import { PasswordHasher, VerifyPassword } from "./util/passwordHashing";
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import sqlite3 from 'sqlite3';
+import { v4 as uuidv4 } from 'uuid';
+import { PasswordHasher, VerifyPassword } from './util/passwordHashing';
 
 const app = express();
 const port = 3000;
 
+// Enable CORS - MUST be before other middleware
+app.use(cors());
 app.use(express.json());
 
-const salt = genSaltSync(10);
-
-const db = new sqlite3.Database("database.db", (err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log("Connected to the in-memory SQLite DB");
+const db = new sqlite3.Database('database.db', (err) => {
+    if (err) {
+        return console.error('Database connection failed:', err.message);
+    }
+    console.log("Connected to SQLite database: database.db");
+    
+    // Log table creation
+    db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, tables) => {
+        if (err) {
+            console.error('Error fetching tables:', err.message);
+        } else {
+            console.log('Tables in database:', tables.map((t: any) => t.name));
+        }
+    });
 });
 
 db.serialize(() => {
@@ -118,10 +127,13 @@ app.get('/api/habits/:userId', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
+        if (rows.length === 0)
+        {
+            return res.status(401).json({error: "There are no habits under current user"})
+        }
         res.json({ data: rows });
     });
   });
-});
 
 // Create
 app.post('/api/habits/', (req, res) => {
