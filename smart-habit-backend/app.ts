@@ -57,6 +57,27 @@ db.serialize(() => {
     )`);
 });
 
+// =========================================================================
+//                          HEALTH -  ENDPTS
+// =========================================================================
+
+
+app.get('/api/health', (req, res) => {
+    db.get("SELECT COUNT(*) as count FROM users", [], (err, row) => {
+        if (err) {
+            return res.status(500).json({ 
+                status: "error", 
+                database: "disconnected",
+                error: err.message 
+            });
+        }
+        res.json({ 
+            status: "ok", 
+            database: "connected",
+            users: row 
+        });
+    });
+});
 
 // =========================================================================
 //                          USER - CONTROLLER ENDPTS
@@ -121,7 +142,7 @@ app.post('/api/users/login', (req, res) => {
 
 
 // Read
-app.get('/app/habits/:userId', (req, res) => {
+app.get('/api/habits/:userId', (req, res) => {
     const {userId} = req.params;
 
     db.all("SELECT * FROM habits WHERE user_id = ?", [userId], (err, rows) => {
@@ -133,7 +154,7 @@ app.get('/app/habits/:userId', (req, res) => {
 })
 
 // Create
-app.post('/app/habits/', (req, res) => {
+app.post('/api/habits/', (req, res) => {
     const { userId, name, frequency } = req.body;
 
     if (!userId || !name || !frequency ) {
