@@ -58,10 +58,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       }
 
       const data: IUserResponse = await response.json();
-      
-      // Store user in localStorage
       localStorage.setItem('user', JSON.stringify(data));
-      
       onLoginSuccess(data);
 
     } catch (err) {
@@ -72,17 +69,23 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">
+    <div className="min-h-screen bg-gradient-to-b from-gray-400 via-gray-700 to-black flex items-center justify-center p-4 relative">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 backdrop-blur-xl bg-white/10 p-8 rounded-2xl shadow-lg border border-white/20 w-full max-w-md transition-all duration-300 hover:shadow-xl hover:bg-white/15">
+        <h1 className="text-2xl font-bold text-center text-white mb-2 tracking-tight">
           Smart Habit Tracker
         </h1>
-        <h2 className="text-lg text-center text-gray-600 mb-6">
+        <h2 className="text-lg text-center text-gray-300 mb-6">
           {isLogin ? 'Login to your account' : 'Create an account'}
         </h2>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+          <div className="mb-4 p-3 backdrop-blur-md bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 text-sm">
             {error}
           </div>
         )}
@@ -96,7 +99,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               onChange={handleChange}
               placeholder="Username"
               required={!isLogin}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl 
+                         focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent
+                         placeholder-gray-400 text-white transition-all duration-200
+                         hover:bg-white/15"
             />
           )}
 
@@ -107,7 +113,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             onChange={handleChange}
             placeholder="Email"
             required
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl 
+                       focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent
+                       placeholder-gray-400 text-white transition-all duration-200
+                       hover:bg-white/15"
           />
 
           <input
@@ -117,13 +126,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             onChange={handleChange}
             placeholder="Password"
             required
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl 
+                       focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent
+                       placeholder-gray-400 text-white transition-all duration-200
+                       hover:bg-white/15"
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="w-full p-3 backdrop-blur-md bg-blue-500/80 text-white font-medium rounded-xl
+                       border border-blue-400/30 shadow-lg shadow-blue-500/25
+                       hover:bg-blue-500/90 hover:shadow-xl hover:shadow-blue-500/30
+                       active:scale-[0.98] transition-all duration-200
+                       disabled:bg-gray-400/50 disabled:shadow-none disabled:cursor-not-allowed"
           >
             {loading ? 'Please wait...' : (isLogin ? 'Login' : 'Register')}
           </button>
@@ -135,7 +151,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               setIsLogin(!isLogin);
               setError(null);
             }}
-            className="text-blue-600 hover:underline"
+            className="text-blue-700/80 hover:text-blue-800 transition-colors"
           >
             {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}
           </button>

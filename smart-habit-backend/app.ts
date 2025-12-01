@@ -210,24 +210,6 @@ app.get("/api/reports/weekly/:userId", (req, res) => {
   });
 });
 
-app.get("/api/reports/monthly/:userId", (req, res) => {
-  const { userId } = req.params;
-
-  const sql = `
-        SELECT h.name, COUNT(l.id) as completions
-        FROM habits h
-        LEFT JOIN habit_logs l ON h.id = l.habit_id
-            AND l.date >= date('now', '-30 days')
-        WHERE h.user_id = ?
-        GROUP BY h.id
-    `;
-  db.all(sql, [userId], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ report: "monthly", data: rows });
-  });
-});
 
 // =========================================================================
 //                         REMINDER ENDPT ENDPT (User-specfic) CRUD

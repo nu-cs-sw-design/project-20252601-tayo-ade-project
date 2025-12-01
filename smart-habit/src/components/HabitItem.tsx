@@ -9,14 +9,15 @@ interface IHabitItemProps {
 
 const HabitItem: React.FC<IHabitItemProps> = ({ id, name, frequency, onDelete }) => {
   return (
-    <div className="flex items-center justify-between p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
+    <div className="flex items-center justify-between p-4 backdrop-blur-md bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-200">
       <div>
-        <h3 className="font-medium text-gray-800">{name}</h3>
-        <p className="text-sm text-gray-500">{frequency}</p>
+        <h3 className="font-medium text-white">{name}</h3>
+        <p className="text-sm text-gray-400 capitalize">{frequency}</p>
       </div>
       <button
         onClick={() => onDelete(id)}
-        className="text-red-500 hover:text-red-700 text-sm"
+        className="px-3 py-1 backdrop-blur-md bg-red-500/20 text-red-400 rounded-lg border border-red-500/30 
+                   hover:bg-red-500/30 active:scale-95 transition-all duration-200 text-sm"
       >
         Delete
       </button>

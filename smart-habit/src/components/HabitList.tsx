@@ -41,7 +41,6 @@ const HabitList: React.FC<IHabitListProps> = ({ userId, refreshTrigger, onHabitD
     }
   };
 
-  // Fetch habits when component mounts, userId changes, or refreshTrigger changes
   useEffect(() => {
     if (userId) {
       fetchHabits();
@@ -58,10 +57,8 @@ const HabitList: React.FC<IHabitListProps> = ({ userId, refreshTrigger, onHabitD
         throw new Error('Failed to delete habit');
       }
 
-      // Remove from local state immediately
       setHabits(prev => prev.filter(habit => habit.id !== habitId));
 
-      // Notify parent
       if (onHabitDeleted) {
         onHabitDeleted();
       }
@@ -72,41 +69,46 @@ const HabitList: React.FC<IHabitListProps> = ({ userId, refreshTrigger, onHabitD
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-700">My Habits</h2>
-        <button 
-          onClick={fetchHabits}
-          className="text-sm text-blue-600 hover:text-blue-800"
-        >
-          Refresh
-        </button>
-      </div>
+    <div className="relative group backdrop-blur-xl bg-white/10 p-6 rounded-2xl shadow-lg border border-white/20 transition-all duration-300 hover:shadow-xl hover:bg-white/20 overflow-hidden">
+      {/* Shimmer overlay - shows on idle, hides on hover */}
+      <div className="absolute inset-0 animate-shimmer opacity-50 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"></div>
 
-      {loading && (
-        <p className="text-gray-500 text-center py-4">Loading habits...</p>
-      )}
-
-      {error && (
-        <div className="p-3 bg-red-100 text-red-700 rounded-md mb-4">
-          {error}
+      <div className="relative z-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-white tracking-tight">My Habits</h2>
+          <button 
+            onClick={fetchHabits}
+            className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            Refresh
+          </button>
         </div>
-      )}
 
-      {!loading && !error && habits.length === 0 && (
-        <p className="text-gray-500 text-center py-4">No habits yet. Add one!</p>
-      )}
+        {loading && (
+          <p className="text-gray-400 text-center py-4">Loading habits...</p>
+        )}
 
-      <div className="space-y-3">
-        {habits.map(habit => (
-          <HabitItem 
-            key={habit.id}
-            id={habit.id}
-            name={habit.name}
-            frequency={habit.frequency}
-            onDelete={handleDelete}
-          />
-        ))}
+        {error && (
+          <div className="p-3 backdrop-blur-md bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 mb-4 text-sm">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && habits.length === 0 && (
+          <p className="text-gray-400 text-center py-4">No habits yet. Add one!</p>
+        )}
+
+        <div className="space-y-3">
+          {habits.map(habit => (
+            <HabitItem 
+              key={habit.id}
+              id={habit.id}
+              name={habit.name}
+              frequency={habit.frequency}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -60,19 +60,16 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
       const data: IHabitResponse = await response.json();
       setSuccess(true);
 
-      // Reset form
       setFormData({
         userId: userId,
         name: '',
         frequency: 'daily'
       });
 
-      // Notify parent to refresh the list
       if (onHabitAdded) {
         onHabitAdded(data);
       }
 
-      // Hide success message after 2 seconds
       setTimeout(() => setSuccess(false), 2000);
 
     } catch (err) {
@@ -83,17 +80,19 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700">Add New Habit</h2>
+    <div className="backdrop-blur-xl bg-white/10 p-6 rounded-2xl shadow-lg border border-white/20 transition-all duration-300 hover:shadow-xl hover:bg-white/15">
+      <h2 className="text-xl font-semibold mb-4 text-white tracking-tight">
+        Add New Habit
+      </h2>
 
       {error && (
-        <div className="mb-4 p-2 bg-red-100 text-red-700 rounded-md">
+        <div className="mb-4 p-3 backdrop-blur-md bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 text-sm">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-4 p-2 bg-green-100 text-green-700 rounded-md">
+        <div className="mb-4 p-3 backdrop-blur-md bg-green-500/20 text-green-300 rounded-xl border border-green-500/30 text-sm">
           Habit added successfully!
         </div>
       )}
@@ -106,24 +105,33 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
           onChange={handleChange}
           placeholder="Habit Name"
           required
-          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl 
+                     focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent
+                     placeholder-gray-400 text-white transition-all duration-200
+                     hover:bg-white/15"
         />
 
         <select
           name="frequency"
           value={formData.frequency}
           onChange={handleChange}
-          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl 
+                     focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent
+                     text-white transition-all duration-200 hover:bg-white/15
+                     appearance-none cursor-pointer"
         >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
+          <option value="daily" className="bg-gray-800 text-white">Daily</option>
+          <option value="weekly" className="bg-gray-800 text-white">Weekly</option>
         </select>
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+          className="p-3 backdrop-blur-md bg-blue-500/80 text-white font-medium rounded-xl
+                     border border-blue-400/30 shadow-lg shadow-blue-500/25
+                     hover:bg-blue-500/90 hover:shadow-xl hover:shadow-blue-500/30
+                     active:scale-[0.98] transition-all duration-200
+                     disabled:bg-gray-400/50 disabled:shadow-none disabled:cursor-not-allowed"
         >
           {loading ? 'Adding...' : 'Add'}
         </button>
