@@ -111,27 +111,21 @@ app.post("/api/users/login", (req, res) => {
 // =========================================================================
 
 // Read
-app.get("/api/habits/:userId", (req, res) => {
-  const { userId } = req.params;
-  db.get("SELECT * FROM users WHERE id = ?", [userId], (err, user) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    db.all("SELECT * FROM habits where user_id = ?", [userId], (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ data: rows });
+app.get('/api/habits/:userId', (req, res) => {
+    const {userId} = req.params;
+
+    db.all("SELECT * FROM habits WHERE user_id = ?", [userId], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ data: rows });
     });
   });
 });
 
 // Create
-app.post("/api/habits/", (req, res) => {
-  const { userId, name, frequency } = req.body;
+app.post('/api/habits/', (req, res) => {
+    const { userId, name, frequency } = req.body;
 
   if (!userId || !name || !frequency) {
     return res
