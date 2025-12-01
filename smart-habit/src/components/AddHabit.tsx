@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface IHabitFormData {
   userId: string;
@@ -9,18 +8,17 @@ interface IHabitFormData {
 
 interface IHabitResponse {
   id: number;
-  userId: string; 
+  userId: string;
   name: string;
   frequency: string;
 }
 
 interface AddHabitProps {
-  userId: string; 
+  userId: string;
   onHabitAdded?: (habit: IHabitResponse) => void;
 }
 
 const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
-
   const [formData, setFormData] = useState<IHabitFormData>({
     userId: userId,
     name: '',
@@ -69,9 +67,13 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
         frequency: 'daily'
       });
 
+      // Notify parent to refresh the list
       if (onHabitAdded) {
         onHabitAdded(data);
       }
+
+      // Hide success message after 2 seconds
+      setTimeout(() => setSuccess(false), 2000);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -97,7 +99,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
       )}
 
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <input 
+        <input
           type="text"
           name="name"
           value={formData.name}
@@ -106,8 +108,8 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
           required
           className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        
-        <select 
+
+        <select
           name="frequency"
           value={formData.frequency}
           onChange={handleChange}
@@ -118,7 +120,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ userId, onHabitAdded }) => {
           <option value="monthly">Monthly</option>
         </select>
 
-        <button 
+        <button
           type="submit"
           disabled={loading}
           className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"

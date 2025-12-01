@@ -29,18 +29,18 @@ const db = new sqlite3.Database('database.db', (err) => {
 });
 
 db.serialize(() => {
-  // Users Table
+  // Users Table - Change id to TEXT for UUID
   db.run(`CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY,
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL
     )`);
 
-  // Habits Table (tied to user)
+  // Habits Table - Change user_id to TEXT for UUID
   db.run(`CREATE TABLE IF NOT EXISTS habits (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
+        user_id TEXT NOT NULL,
         name TEXT NOT NULL,
         frequency TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -54,10 +54,10 @@ db.serialize(() => {
         FOREIGN KEY (habit_id) REFERENCES habits (id) ON DELETE CASCADE
     )`);
 
-  // Reminder Settings Table (per user)
+  // Reminder Settings Table - Change user_id to TEXT for UUID
   db.run(`CREATE TABLE IF NOT EXISTS reminder_settings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL UNIQUE,
+        user_id TEXT NOT NULL UNIQUE,
         time TEXT NOT NULL,
         enabled INTEGER DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -75,17 +75,22 @@ app.post("/api/users/register", (req, res) => {
     return res.status(400).json({ error: "All Fields Mandatory" });
   }
 
-  const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-
+  const userId = uuidv4();
   const hashedPassword = PasswordHasher(password);
 
-  db.run(sql, [username, email, hashedPassword], (err) => {
+  const sql = "INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)";
+
+  db.run(sql, [userId, username, email, hashedPassword], function(err) {
     if (err) {
+      if (err.message.includes("UNIQUE constraint failed")) {
+        return res.status(409).json({ error: "Email or username already exists" });
+      }
       return res.status(500).json({ error: err.message });
     }
-    res.json({ id: uuidv4(), username, email });
+    res.json({ id: userId, username, email });
   });
 });
+
 
 app.post("/api/users/login", (req, res) => {
   const { email, password } = req.body;
@@ -126,10 +131,6 @@ app.get('/api/habits/:userId', (req, res) => {
     db.all("SELECT * FROM habits WHERE user_id = ?", [userId], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
-        }
-        if (rows.length === 0)
-        {
-            return res.status(401).json({error: "There are no habits under current user"})
         }
         res.json({ data: rows });
     });
