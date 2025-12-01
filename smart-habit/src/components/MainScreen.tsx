@@ -7,18 +7,20 @@ import ReminderSettings from './ReminderSettings';
 
 const MainScreen: React.FC = () => {
   return (
-    <div className="main-screen">
-      <h1>Smart Habit Tracker</h1>
-      <div className="dashboard">
-        <HabitList />
-        <div className="actions">
-          <AddHabit />
-          <LogHabit />
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Smart Habit Tracker</h1>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          <HabitList />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AddHabit />
+            <LogHabit />
+          </div>
         </div>
-      </div>
-      <div className="settings-reports">
-        <ReportPage />
-        <ReminderSettings />
+        <div className="space-y-6">
+          <ReportPage />
+          <ReminderSettings />
+        </div>
       </div>
     </div>
   );
