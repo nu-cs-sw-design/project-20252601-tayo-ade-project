@@ -11,6 +11,7 @@ const ReminderSettings: React.FC<ReminderSettingsProps> = ({ userId }) => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch existing settings
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -26,6 +27,25 @@ const ReminderSettings: React.FC<ReminderSettingsProps> = ({ userId }) => {
     };
     fetchSettings();
   }, [userId]);
+
+  const handleToggleEnabled = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEnabled = e.target.checked;
+    setEnabled(newEnabled);
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/reminders/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ time, enabled: newEnabled })
+      });
+
+      if (response.ok) {
+        window.dispatchEvent(new CustomEvent('reminderSettingsUpdated'));
+      }
+    } catch (err) {
+      console.error('Failed to update reminder setting');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +63,9 @@ const ReminderSettings: React.FC<ReminderSettingsProps> = ({ userId }) => {
       if (!response.ok) {
         throw new Error('Failed to update settings');
       }
+
+      window.dispatchEvent(new CustomEvent('reminderSettingsUpdated'));
+      localStorage.removeItem(`reminder_shown_${userId}`);
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
@@ -71,12 +94,13 @@ const ReminderSettings: React.FC<ReminderSettingsProps> = ({ userId }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Enable toggle */}
         <div className="flex items-center gap-3 p-3 backdrop-blur-md bg-white/5 rounded-xl border border-white/10">
           <input
             type="checkbox"
             id="enabled"
             checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
+            onChange={handleToggleEnabled}
             className="w-5 h-5 rounded-md border-white/20 text-blue-500 focus:ring-blue-400/50 bg-white/10"
           />
           <label htmlFor="enabled" className="text-white">
@@ -84,6 +108,7 @@ const ReminderSettings: React.FC<ReminderSettingsProps> = ({ userId }) => {
           </label>
         </div>
 
+        {/* Time picker */}
         <div>
           <label className="block text-sm text-gray-400 mb-2">Reminder Time</label>
           <input
@@ -98,6 +123,7 @@ const ReminderSettings: React.FC<ReminderSettingsProps> = ({ userId }) => {
           />
         </div>
 
+        {/* Save button */}
         <button
           type="submit"
           disabled={loading}
