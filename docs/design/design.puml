@@ -1,105 +1,287 @@
 @startuml
 
-package "Model Layer" {
-  class Habit {
-    + id: string
-    + name: string
-    + frequency: string
-  }
+' Styling for better readability
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-  class HabitLog {
-    + habitId: string
-    + date: Date
-  }
+' ==========================================
+' 1. MODEL (Data Layer)
+' ==========================================
+package "Model (Database & Data Structures)" {
+    class User {
+        +id: string
+        +username: string
+        +email: string
+        +password_hash: string
+    }
 
-  class ReminderSettingsModel {
-    + time: string
-    + enabled: boolean
-  }
+    class Habit {
+        +id: number
+        +user_id: string
+        +name: string
+        +frequency: string
+    }
+
+    class HabitLog {
+        +id: number
+        +habit_id: number
+        +date: string
+        +status: string
+    }
+
+    class ReminderData {
+        +user_id: string
+        +time: string (HH:MM)
+        +enabled: boolean
+    }
+
+    ' Relationships
+    User "1" -- "*" Habit : owns
+    User "1" -- "1" ReminderData : has
+    Habit "1" -- "*" HabitLog : has history
 }
 
-package "View Layer (React Components)" {
+' ==========================================
+' 2. VIEW (Presentation Layer)
+' ==========================================
+package "View (React Frontend)" {
+    class App {
+        +userState: User
+        +handleLogin()
+        +handleLogout()
+    }
 
-  class App {
-    + renders MainScreen
-  }
+    class LoginPage {
+        +usernameInput: string
+        +passwordInput: string
+        +submitForm()
+    }
 
-  class MainScreen {
-    + renders HabitList
-    + renders AddHabit
-    + renders LogHabit
-    + renders ReportPage
-    + renders ReminderSettings
-  }
+    class MainScreen {
+        +refreshTrigger: number
+    }
 
-  class HabitList {
-    + displays list of habits
-  }
+    class ReminderSettings {
+        +time: string
+        +enabled: boolean
+        +handleToggleEnabled()
+        +handleSubmit()
+    }
 
-  class HabitItem {
-    + displays single habit
-  }
+    class ReminderNotification {
+        +currentTime: string
+        +checkTime()
+        +showMissedReminder()
+        +showOnTimeReminder()
+    }
 
-  class AddHabit {
-    + form to create habit
-  }
+    class HabitList {
+        +habits: Habit[]
+        +fetchHabits()
+    }
 
-  class LogHabit {
-    + form to log habit completion
-  }
+    class ReportPage {
+        +chartData: object
+        +renderGraphs()
+    }
 
-  class ReportPage {
-    + displays generated report
-  }
-
-  class ReminderSettings {
-    + configure notifications
-  }
+    ' View Hierarchy
+    App *-- LoginPage
+    App *-- MainScreen
+    App *-- ReminderNotification : (Global Overlay)
+    MainScreen *-- HabitList
+    MainScreen *-- ReminderSettings
+    MainScreen *-- ReportPage
 }
 
-package "Controller Layer" {
+' ==========================================
+' 3. CONTROLLER (Logic & API Layer)
+' ==========================================
+package "Controller (Backend API)" {
+    class ExpressServer {
+        +start()
+    }
 
-  class HabitController {
-    + getHabits()
-    + addHabit()
-    + deleteHabit()
-    + logCompletion()
-  }
+    class AuthController {
+        +POST /api/login
+        +POST /api/register
+    }
 
-  class ReportController {
-    + generateWeeklyReport()
-    + generateMonthlyReport()
-  }
+    class HabitController {
+        +GET /api/habits/:userId
+        +POST /api/habits
+        +DELETE /api/habits/:id
+    }
 
-  class ReminderController {
-    + updateReminderSettings()
-    + getReminderSettings()
-  }
+    class ReminderController {
+        +GET /api/reminders/:userId
+        +PUT /api/reminders/:userId
+    }
+
+    class ReportController {
+        +GET /api/reports/:userId
+    }
+    
+    ExpressServer *-- AuthController
+    ExpressServer *-- HabitController
+    ExpressServer *-- ReminderController
+    ExpressServer *-- ReportController
 }
 
-' Relationships between layers
-HabitController --> Habit : uses
-HabitController --> HabitLog : uses
-ReportController --> HabitLog : analyzes
-ReminderController --> ReminderSettingsModel : manages
+' ==========================================
+' INTERACTIONS
+' ==========================================
 
-' Controllers providing data to Views
-HabitController --> HabitList
-HabitController --> HabitItem
-HabitController --> AddHabit
-HabitController --> LogHabit
+' View talks to Controller (API Calls)
+LoginPage ..> AuthController : sends credentials
+HabitList ..> HabitController : fetches data
+ReminderSettings ..> ReminderController : PUT settings
+ReminderNotification ..> ReminderController : GET settings
 
-ReportController --> ReportPage
-ReminderController --> ReminderSettings
+' Controller talks to Model (Database Operations)
+AuthController ..> User : reads/writes
+HabitController ..> Habit : reads/writes
+ReminderController ..> Reminder@startuml
 
-' App navigation
-App --> MainScreen
-MainScreen --> HabitList
-MainScreen --> AddHabit
-MainScreen --> LogHabit
-MainScreen --> ReportPage
-MainScreen --> ReminderSettings
+' Styling for better readability
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-HabitList --> HabitItem
+' ==========================================
+' 1. MODEL (Data Layer)
+' ==========================================
+package "Model (Database & Data Structures)" {
+    class User {
+        +id: string
+        +username: string
+        +email: string
+        +password_hash: string
+    }
 
-@enduml
+    class Habit {
+        +id: number
+        +user_id: string
+        +name: string
+        +frequency: string
+    }
+
+    class HabitLog {
+        +id: number
+        +habit_id: number
+        +date: string
+        +status: string
+    }
+
+    class ReminderData {
+        +user_id: string
+        +time: string (HH:MM)
+        +enabled: boolean
+    }
+
+    ' Relationships
+    User "1" -- "*" Habit : owns
+    User "1" -- "1" ReminderData : has
+    Habit "1" -- "*" HabitLog : has history
+}
+
+' ==========================================
+' 2. VIEW (Presentation Layer)
+' ==========================================
+package "View (React Frontend)" {
+    class App {
+        +userState: User
+        +handleLogin()
+        +handleLogout()
+    }
+
+    class LoginPage {
+        +usernameInput: string
+        +passwordInput: string
+        +submitForm()
+    }
+
+    class MainScreen {
+        +refreshTrigger: number
+    }
+
+    class ReminderSettings {
+        +time: string
+        +enabled: boolean
+        +handleToggleEnabled()
+        +handleSubmit()
+    }
+
+    class ReminderNotification {
+        +currentTime: string
+        +checkTime()
+        +showMissedReminder()
+        +showOnTimeReminder()
+    }
+
+    class HabitList {
+        +habits: Habit[]
+        +fetchHabits()
+    }
+
+    class ReportPage {
+        +chartData: object
+        +renderGraphs()
+    }
+
+    ' View Hierarchy
+    App *-- LoginPage
+    App *-- MainScreen
+    App *-- ReminderNotification : (Global Overlay)
+    MainScreen *-- HabitList
+    MainScreen *-- ReminderSettings
+    MainScreen *-- ReportPage
+}
+
+' ==========================================
+' 3. CONTROLLER (Logic & API Layer)
+' ==========================================
+package "Controller (Backend API)" {
+    class ExpressServer {
+        +start()
+    }
+
+    class AuthController {
+        +POST /api/login
+        +POST /api/register
+    }
+
+    class HabitController {
+        +GET /api/habits/:userId
+        +POST /api/habits
+        +DELETE /api/habits/:id
+    }
+
+    class ReminderController {
+        +GET /api/reminders/:userId
+        +PUT /api/reminders/:userId
+    }
+
+    class ReportController {
+        +GET /api/reports/:userId
+    }
+    
+    ExpressServer *-- AuthController
+    ExpressServer *-- HabitController
+    ExpressServer *-- ReminderController
+    ExpressServer *-- ReportController
+}
+
+' ==========================================
+' INTERACTIONS
+' ==========================================
+
+' View talks to Controller (API Calls)
+LoginPage ..> AuthController : sends credentials
+HabitList ..> HabitController : fetches data
+ReminderSettings ..> ReminderController : PUT settings
+ReminderNotification ..> ReminderController : GET settings
+
+' Controller talks to Model (Database Operations)
+AuthController ..> User : reads/writes
+HabitController ..> Habit : reads/writes
+ReminderController ..> Reminder
