@@ -1,9 +1,5 @@
 @startuml
 
-' Styling for better readability
-skinparam packageStyle rectangle
-skinparam classAttributeIconSize 0
-
 ' ==========================================
 ' 1. MODEL (Data Layer)
 ' ==========================================
